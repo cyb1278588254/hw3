@@ -1,0 +1,152 @@
+ T1.m
+A='citywall.bmp';%选择要处理的图像
+% A='citywall1.bmp';%选择要处理的图像
+% A='citywall2.bmp';%选择要处理的图像
+% A='elain.bmp';%选择要处理的图像
+% A='elain1.bmp';%选择要处理的图像
+% A='elain2.bmp';%选择要处理的图像
+% A='elain3.bmp';%选择要处理的图像
+% A='lena.bmp';%选择要处理的图像
+% A='lena1.bmp';%选择要处理的图像
+% A='lena2.bmp';%选择要处理的图像
+% A='lena4.bmp';%选择要处理的图像
+% A='woman.bmp';%选择要处理的图像
+% A='woman1.bmp';%选择要处理的图像
+% A='woman2.bmp';%选择要处理的图像
+GP=zeros(1,256);%原图灰度概率密度函数
+[X MAP]=imread(char(A));
+I=ind2gray(X,MAP);
+[m,n]=size(I);
+subplot(2,1,1),
+imshow(I)
+%显示原图
+title(char(A));
+%计算原图各灰度级像素个数
+for k=0:255
+  GP(k+1)=length(find(I==k))/(m*n);
+end
+%绘制原图直方图
+subplot(2,1,2),
+bar(0:255,GP)
+v=[0 256 0 0.05];
+axis(v);
+title(strcat(char(A),'的直方图'));
+xlabel('灰度值');
+ylabel('像素的概率密度');
+
+
+T2.m
+A='citywall.bmp';%选择要处理的图像
+%A='citywall1.bmp';%选择要处理的图像
+% A='citywall2.bmp';%选择要处理的图像
+%A='elain.bmp';%选择要处理的图像
+% A='elain1.bmp';%选择要处理的图像
+% A='elain2.bmp';%选择要处理的图像
+% A='elain3.bmp';%选择要处理的图像
+%A='lena.bmp';%选择要处理的图像
+%A='lena1.bmp';%选择要处理的图像
+%A='lena2.bmp';%选择要处理的图像
+%A='lena4.bmp';%选择要处理的图像
+% A='woman.bmp';%选择要处理的图像
+% A='woman1.bmp';%选择要处理的图像
+%A='woman2.bmp';%选择要处理的图像
+GP=zeros(1,256);%原图灰度概率密度函数
+GPeq=zeros(1,256);%直方图均衡后灰度概率密度函数
+[X MAP]=imread(char(A));
+I=ind2gray(X,MAP);
+[m,n]=size(I);
+figure(1)
+subplot(2,2,1),
+imshow(I)
+%显示原图
+title(char(A));
+%计算原图各灰度级像素个数
+for k=0:255
+  GP(k+1)=length(find(I==k))/(m*n);
+end
+%绘制原图直方图
+subplot(2,2,2)
+bar(0:255,GP)
+v=[0 256 0 0.05];
+axis(v);
+title('原图直方图');
+xlabel('灰度值');
+ylabel('像素的概率密度');
+%直方图均衡化
+S1=zeros(1,256);
+for i=1:256
+     for j=1:i
+          S1(i)=GP(j)+S1(i);                 %计算Sk
+     end
+end
+S2=round(S1*256); %将Sk归到相近级的灰度，四舍五入，返回整数
+for i=1:256
+     GPeq(i)=sum(GP(find(S2==i)));           %计算现有每个灰度级出现的概率
+end
+subplot(2,2,4)
+bar(0:255,GPeq)                  %显示均衡化后的直方图
+v=[0 256 0 0.05];
+axis(v);
+title('均衡化后的直方图')
+xlabel('灰度值');
+ylabel('像素的概率密度');
+%图像均衡化
+PA=I;
+for i=0:255
+     PA(find(I==i))=S2(i+1);         %将各个像素归一化后的灰度值赋给这个像素
+end
+subplot(2,2,3)
+imshow(PA)        %显示均衡化后的图像 
+title('均衡化后的图像')
+
+
+T3.m
+A='citywall1.bmp';%选择要处理的图像
+% A='citywall2.bmp';%选择要处理的图像
+% A='elain1.bmp';%选择要处理的图像
+% A='elain2.bmp';%选择要处理的图像
+% A='elain3.bmp';%选择要处理的图像
+%A='lena1.bmp';%选择要处理的图像
+%A='lena2.bmp';%选择要处理的图像
+% A='lena4.bmp';%选择要处理的图像
+%A='woman1.bmp';%选择要处理的图像
+%A='woman2.bmp';%选择要处理的图像
+[IM MAP]=imread(char(A));I=ind2gray(IM,MAP);
+B='citywall.bmp';%选定要匹配的图像名称
+%B='elain.bmp';%选定要匹配的图像名称
+%B='lena.bmp';%选定要匹配的图像名称
+%B='woman.bmp';%选定要匹配的图像名称
+[IM2 MAP2]=imread(char(B));I2=ind2gray(IM2,MAP2);
+hsp=imhist(I2);g=histeq(I,hsp);figure(1);v=[0 256 0 3000];
+subplot(1,2,1);imshow(I);title(strcat('原图',char(A)));
+subplot(1,2,2);imshow(g);title('直方图匹配增强后的图像');
+figure(2);
+subplot(3,1,1);imhist(I);
+axis(v);title(strcat('原图',char(A),'的直方图'));
+subplot(3,1,2);imhist(I2);
+axis(v);title(strcat('匹配图',char(B),'的直方图'));
+subplot(3,1,3);imhist(g);axis(v);title('增强后图像直方图');
+
+
+T4.m
+A=imread('elain.bmp');
+J=adapthisteq(A,'NumTiles',[7 7]);
+figure(1);subplot(1,2,1);imshow(A);title('elain原图');
+subplot(1,2,2);imshow(J);title('elain局部直方图增强图像');
+B=imread('lena.bmp');
+J2=adapthisteq(B,'NumTiles',[7 7]);
+figure(2);subplot(1,2,1);imshow(B);title('lena原图');
+subplot(1,2,2);imshow(J2);title('lena局部直方图增强图像');
+
+
+T5.m
+%调用matlab中的函数进行分割
+A='elain.bmp';%选择要处理的图像
+%A='woman.bmp';%选择要处理的图像
+I=imread(char(A));
+figure(1);subplot(1,2,1);imshow(I);title(strcat(char(A),'原始图像'));
+level=graythresh(I);
+BW=im2bw(I,level);
+subplot(1,2,2);imshow(BW);title(strcat('分割后的',char(A)));
+
+
